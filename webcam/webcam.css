@@ -1,0 +1,24 @@
+html,
+body {
+	margin: 0;
+	padding: 0;
+	height: 100%;
+	width: 100%;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	background-color: #000;
+	overflow: hidden;
+}
+body {
+	display: flex;
+	flex-direction: column;
+}
+
+video {
+	width: 94vw;
+	/* height: 100vh; */
+	object-fit: fill;
+	background-color: #000;
+	aspect-ratio: 1280 / 720;
+}

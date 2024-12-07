@@ -1,0 +1,19 @@
+{
+	"name": "game-auto-play",
+	"version": "1.0.0",
+	"description": "",
+	"type": "module",
+	"directories": {
+		"test": "test"
+	},
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1",
+		"watch": "ws -c lws.config.js"
+	},
+	"author": "",
+	"license": "ISC",
+	"devDependencies": {
+		"local-web-server": "5.3.3",
+		"prettier": "^3.3.3"
+	}
+}
