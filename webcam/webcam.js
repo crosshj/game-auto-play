@@ -40,13 +40,51 @@ const saveImage = (frame) => {
 	link.href = image;
 	link.download = 'capture.png';
 	link.click();
+};
 
-	console.log('TODO: submit this to backend or to AI model');
+const populateVideoSources = async () => {
+	const videoSelect = document.getElementById('videoSource');
+	const devices = await navigator.mediaDevices.enumerateDevices();
+	const videoDevices = devices.filter(
+		(device) => device.kind === 'videoinput'
+	);
+	videoDevices.forEach((device, index) => {
+		const option = document.createElement('option');
+		option.value = device.deviceId;
+		option.text = device.label || `Camera ${index + 1}`;
+		videoSelect.appendChild(option);
+	});
+	return videoDevices;
+};
+
+const startVideoWithSource = async (deviceId) => {
+	const videoElement = document.getElementById('webcam');
+	let stream;
+	if (!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia)) {
+		return { videoElement, stream };
+	}
+	stream = await navigator.mediaDevices
+		.getUserMedia({ video: { deviceId: { exact: deviceId } } })
+		.catch((err) => {
+			console.error('Error accessing webcam: ', err);
+		});
+	videoElement.srcObject = stream;
+	return { videoElement, stream };
 };
 
 const domContentLoaded = async (event) => {
-	let { videoElement, stream } = await startVideo();
+	const devices = populateVideoSources();
+	const deviceId = localStorage.getItem('deviceId') || devices[0]?.deviceId;
+	let { videoElement, stream } = await startVideoWithSource(deviceId);
 	// console.log({ videoElement, stream });
+
+	document
+		.getElementById('videoSource')
+		.addEventListener('change', async (event) => {
+			const deviceId = event.target.value;
+			localStorage.setItem('deviceId', deviceId);
+			({ videoElement, stream } = await startVideoWithSource(deviceId));
+		});
 
 	document
 		.getElementById('stopButton')
