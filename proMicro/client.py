@@ -6,6 +6,11 @@ import struct
 import sys
 import time
 import math
+from flask import Flask, request, jsonify
+from flask_cors import CORS
+from threading import Thread
+import nurseryMan
+import shinyCheck
 
 parser = argparse.ArgumentParser('Client for sending controller commands to a controller emulator')
 parser.add_argument('port')
@@ -193,7 +198,7 @@ def send_packet(packet=[0x00,0x00,0x08,0x80,0x80,0x80,0x80,0x00], debug=False):
             crc = crc8_ccitt(crc, d)
         bytes_out.append(crc)
         write_bytes(bytes_out)
-        print(bytes_out)
+        # print(bytes_out)
 
         # Wait for USB ACK or UPDATE NACK
         byte_in = read_byte()
@@ -399,7 +404,7 @@ def sync():
 
     # Try sending a packet
     inSync = send_packet()
-    print(inSync)
+    # print(inSync)
     if not inSync:
         # Not in sync: force resync and send a packet
         inSync = force_sync()
@@ -432,8 +437,68 @@ if not send_cmd(NO_INPUT + BTN_ZL + BTN_ZR):
     print('Packet Error!')
 
 
-testbench_dpad_one_d()
+# testbench_dpad_one_d()
 # testbench()
 # testbench_packet_speed(1000, True)
 
-ser.close
+# ser.close
+
+
+
+# Quick way to stand up a dev server that is a wrapper around send_cmd
+app = Flask(__name__)
+CORS(app)
+
+@app.route('/send_cmd', methods=['POST'])
+def send_cmd_route():
+    data = request.json
+
+    # Send response first, then run commands asynchronously
+
+    def run_commands(command):
+        if isinstance(command, list):
+            for cmd in command:
+                if isinstance(cmd, int):
+                    p_wait(cmd / 1000.0)
+                else:
+                    cmdTrans = globals().get(cmd, NO_INPUT)
+                    send_cmd(cmdTrans)
+        else:
+            commandTrans = NO_INPUT
+            if isinstance(command, str):
+                commandTrans = globals().get(command, NO_INPUT)
+            elif isinstance(command, list):
+                commandTrans = sum(globals().get(cmd, NO_INPUT) for cmd in command)
+            send_cmd(commandTrans)
+
+    command = data.get('command', NO_INPUT)
+    print(command)
+
+    if isinstance(command, list):
+        run_commands(command)
+        # Thread(target=run_commands, args=(command,)).start()
+    else:
+        run_commands(command)
+    return jsonify({'success': True})
+
+
+@app.route('/')
+def index():
+    return app.send_static_file('index.html')
+
+@app.route('/<path:path>')
+def static_files(path):
+    return app.send_static_file(path)
+
+@app.route('/nurseryMan', methods=['POST'])
+def nursery_man_route():
+    return nurseryMan.handle_request(request)
+
+@app.route('/shinyCheck', methods=['POST'])
+def shiny_check_route():
+    return shinyCheck.handle_request(request)
+
+
+if __name__ == '__main__':
+    app.run(port=9000, debug=True)
+

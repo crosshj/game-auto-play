@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Switch Bot</title>
+		<meta name="color-scheme" content="dark light" />
+		<link rel="stylesheet" href="index.css" />
+	</head>
+	<body>
+		<!-- <h1>Switch Bot</h1> -->
+		<!-- <div>
+			<label>
+				Baud Rate:
+				<input
+					id="baudRate"
+					type="number"
+					value="19200"
+					step="100000"
+					min="9600"
+				/>
+			</label>
+			<button id="connect">Connect</button>
+		</div>
+		<div style="display: flex">
+			<button id="sync">SYNC</button>
+			<button id="shoulders">ZL+ZR</button>
+		</div>
+
+		<textarea
+			id="output"
+			readonly
+			placeholder="Received data will appear here..."
+		></textarea> -->
+
+		<video id="webcam" autoplay></video>
+		<div style="display: flex; gap: 1rem; margin-top: 1rem">
+			<label for="videoSource">Select Video Source: </label>
+			<select id="videoSource"></select>
+			<button id="stopButton">Stop</button>
+			<button id="captureButton">Capture</button>
+			<button id="startButton">Start</button>
+		</div>
+
+		<div style="display: flex">
+			<div class="dpad">
+				<button data-command="DPAD_U_L">↖</button>
+				<button data-command="DPAD_U">▲</button>
+				<button data-command="DPAD_U_R">↗</button>
+				<button data-command="DPAD_L">◀</button>
+				<button data-command="DPAD_CENTER" style="visibility: hidden">
+					●
+				</button>
+				<button data-command="DPAD_R">▶</button>
+				<button data-command="DPAD_D_L">↙</button>
+				<button data-command="DPAD_D">▼</button>
+				<button data-command="DPAD_D_R">↘</button>
+			</div>
+
+			<div class="controls">
+				<button data-command="BTN_Y">Y</button>
+				<button data-command="BTN_B">B</button>
+				<button data-command="BTN_A">A</button>
+				<button data-command="BTN_X">X</button>
+				<button data-command="BTN_ZL">ZL</button>
+				<button data-command="BTN_ZR">ZR</button>
+				<button data-command="BTN_L">L</button>
+				<button data-command="BTN_R">R</button>
+				<button data-command="BTN_MINUS">Minus</button>
+				<button data-command="BTN_MINUS">Plus</button>
+				<button data-command="BTN_LCLICK">L Stick</button>
+				<button data-command="BTN_RCLICK">R Stick</button>
+				<button data-command="BTN_HOME">Home</button>
+				<button data-command="BTN_CAPTURE">Capture</button>
+			</div>
+		</div>
+
+		<div id="scripts" class="flex-row" style="gap: 20px"></div>
+	</body>
+
+	<script type="module" src="webcam.js"></script>
+	<script type="module" src="index.js"></script>
+</html>
