@@ -1,5 +1,7 @@
 {
     "C_Cpp.intelliSenseEngine": "default",
     "idf.espIdfPath": "/Users/harrison/esp/v5.4/esp-idf",
-    "idf.toolsPath": "/Users/harrison/.espressif"
+    "idf.toolsPath": "/Users/harrison/.espressif",
+    "idf.port": "/dev/tty.usbserial-0001",
+    "idf.flashType": "UART"
 }

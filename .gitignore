@@ -130,3 +130,9 @@ dist
 .pnp.*
 
 .DS_Store
+
+/esp32-1/hello_world/build
+/esp32-2/UARTSwitchCon-master
+esp32-2/UARTSwitchCon-master.zip
+
+/esp32-2/firmware/build
