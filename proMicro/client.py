@@ -378,11 +378,13 @@ def testbench():
 
 # Force MCU to sync
 def force_sync():
+    print('Force Sync...')
     # Send 9x 0xFF's to fully flush out buffer on device
     # Device will send back 0xFF (RESP_SYNC_START) when it is ready to sync
     write_bytes([0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF])
 
     # Wait for serial data and read the last byte sent
+    print('Wait for data...')
     wait_for_data()
     byte_in = read_byte_latest()
 
@@ -396,10 +398,12 @@ def force_sync():
             byte_in = read_byte()
             if byte_in == RESP_SYNC_OK:
                 inSync = True
+    print('Sync Success =', inSync)
     return inSync
 
 # Start MCU syncing process
 def sync():
+    print('Syncing...')
     inSync = False
 
     # Try sending a packet
@@ -414,35 +418,34 @@ def sync():
 
 # -------------------------------------------------------------------------
 
-ser = serial.Serial(port=args.port, baudrate=19200,timeout=1)
-# ser = serial.Serial(port=args.port, baudrate=96000,timeout=1)
-# ser = serial.Serial(port=args.port, baudrate=31250,timeout=1)
-# ser = serial.Serial(port=args.port, baudrate=40000,timeout=1)
-# ser = serial.Serial(port=args.port, baudrate=62500,timeout=1)
+def initialize_serial_and_sync():
+    global ser
+    ser = serial.Serial(port=args.port, baudrate=19200, timeout=1)
+    # ser = serial.Serial(port=args.port, baudrate=96000,timeout=1)
+    # ser = serial.Serial(port=args.port, baudrate=31250,timeout=1)
+    # ser = serial.Serial(port=args.port, baudrate=40000,timeout=1)
+    # ser = serial.Serial(port=args.port, baudrate=62500,timeout=1)
 
-# Attempt to sync with the MCU
-if not sync():
-    print('Could not sync!')
+    # Attempt to sync with the MCU
+    if not sync():
+        print('Could not sync!')
 
-# if not send_cmd(BTN_A + DPAD_U_R + LSTICK_U + RSTICK_D_L):
-#     print('Packet Error!')
+    if not send_cmd(BTN_A + DPAD_U_R + LSTICK_U + RSTICK_D_L):
+        print('Packet Error!')
 
-p_wait(0.05)
+    p_wait(0.05)
 
-# if not send_cmd():
-#     print('Packet Error!')
+    # if not send_cmd():
+    #     print('Packet Error!')
 
+    if not send_cmd(NO_INPUT + BTN_ZL + BTN_ZR):
+        print('Packet Error!')
 
-if not send_cmd(NO_INPUT + BTN_ZL + BTN_ZR):
-    print('Packet Error!')
+    # testbench_dpad_one_d()
+    # testbench()
+    # testbench_packet_speed(1000, True)
 
-
-# testbench_dpad_one_d()
-# testbench()
-# testbench_packet_speed(1000, True)
-
-# ser.close
-
+    # ser.close
 
 
 # Quick way to stand up a dev server that is a wrapper around send_cmd
@@ -458,7 +461,10 @@ def send_cmd_route():
     def run_commands(command):
         if isinstance(command, list):
             for cmd in command:
-                if isinstance(cmd, int):
+                if(cmd == 'sync'):
+                    send_cmd(NO_INPUT + BTN_ZL + BTN_ZR)
+                    p_wait(0.05)
+                elif isinstance(cmd, int):
                     p_wait(cmd / 1000.0)
                 else:
                     cmdTrans = globals().get(cmd, NO_INPUT)
@@ -472,7 +478,7 @@ def send_cmd_route():
             send_cmd(commandTrans)
 
     command = data.get('command', NO_INPUT)
-    print(command)
+    # print(command)
 
     if isinstance(command, list):
         run_commands(command)
@@ -498,7 +504,7 @@ def nursery_man_route():
 def shiny_check_route():
     return shinyCheck.handle_request(request)
 
-
 if __name__ == '__main__':
+    initialize_serial_and_sync()
     app.run(port=9000, debug=True)
 

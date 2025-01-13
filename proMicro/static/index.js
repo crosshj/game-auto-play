@@ -10,12 +10,12 @@ import {
 
 const t = timer();
 
-const tap = async (fn, number = 1) => {
+const tap = async (fn, number = 1, interval = 200) => {
 	for (const _ of new Array(number)) {
 		await fn();
-		await sleep(200);
+		await sleep(interval);
 		await command.BTN_NONE();
-		await sleep(200);
+		await sleep(interval);
 	}
 };
 
@@ -131,14 +131,8 @@ const eggGrindOne = async () => {
 	command.DPAD_CENTER();
 	for (const it of range(1, 12)) {
 		await tap(command.BTN_A);
-		await sleep(1000);
+		await sleep(2000);
 	}
-	await sleep(2000);
-	await tap(command.BTN_A);
-	await sleep(2000);
-	await tap(command.BTN_A);
-	await sleep(4000);
-	await tap(command.BTN_A);
 
 	t.stop();
 };
@@ -153,6 +147,7 @@ const eggGrind = async () => {
 	t.start();
 };
 
+// start at pointer on hatched under main pokemon in menu
 const batchHatch = async () => {
 	const withLoad = true;
 	const t2 = timer();
@@ -166,7 +161,7 @@ const batchHatch = async () => {
 			const batchInput = document.getElementById('batch');
 			batchInput.value = Number(batchInput.value) - 1;
 
-			await tap(command.BTN_B, 10);
+			await tap(command.BTN_B, 3, 700);
 		}
 		await rideBike();
 		await openHatched();
@@ -188,13 +183,17 @@ const batchHatch = async () => {
 	t2.stop();
 };
 
+const syncController = async () => {
+	await command.list(['sync']);
+};
+
 const scripts = {
 	eggGrind,
 	load,
-	//rideBike,
-	//openHatched,
+	ride: rideBike,
+	open: openHatched,
 	//release,
-	batchHatch,
+	batch: batchHatch,
 	// nurseryMan: async () => {
 	// 	const direction = await nurseryMan();
 	// 	console.log({ direction });
@@ -203,6 +202,7 @@ const scripts = {
 		const result = await shinyCheck();
 		console.log({ result });
 	},
+	syncController,
 };
 
 const domLoaded = async () => {
@@ -215,7 +215,7 @@ const domLoaded = async () => {
 			container = document.createElement('div');
 			container.className = 'flex-row-reverse no-gap';
 			container.innerHTML = `
-				<input id="batch" type="number" value="1" min="1" max="6" />
+				<input id="batch" type="number" value="6" min="1" max="6" />
 			`;
 			scriptsContainer.appendChild(container);
 		}

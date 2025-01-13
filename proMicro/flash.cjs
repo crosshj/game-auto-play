@@ -71,13 +71,13 @@ const flashHex = ({ portName, hexFilePath, avrDudeConf }) =>
 		// const command = `avrdude -C ${avrDudeConf} -v -p atmega32u4 -c avr109 -P ${portName} -b 57600 -D -U flash:w:${hexFilePath}:i`;
 		// const command = `avrdude -v -p atmega32u4 -c avr109 -P ${portName} -b 19200 -D -U flash:w:${hexFilePath}:i`;
 
-		const command1 = `"/Users/anthrowareadmin/Library/Arduino15/packages/arduino/tools/avrdude/6.3.0-arduino17/bin/avrdude" "-C/Users/anthrowareadmin/Library/Arduino15/packages/arduino/tools/avrdude/6.3.0-arduino17/etc/avrdude.conf" -v -patmega32u4 -cstk500v1 -P/dev/cu.usbmodem1461201 -b19200 -e -Ulock:w:0x3F:m -Uefuse:w:0xCB:m -Uhfuse:w:0xD8:m -Ulfuse:w:0xFF:m`;
-		const command2 = `"/Users/anthrowareadmin/Library/Arduino15/packages/arduino/tools/avrdude/6.3.0-arduino17/bin/avrdude" "-C/Users/anthrowareadmin/Library/Arduino15/packages/arduino/tools/avrdude/6.3.0-arduino17/etc/avrdude.conf" -v -patmega32u4 -cstk500v1 -P/dev/cu.usbmodem1461201 -b19200 "-Uflash:w:${hexFilePath}:i" -Ulock:w:0x2F:m`;
-		//"/Users/anthrowareadmin/Library/Arduino15/packages/arduino/tools/avrdude/6.3.0-arduino17/bin/avrdude" "-C/Users/anthrowareadmin/Library/Arduino15/packages/arduino/tools/avrdude/6.3.0-arduino17/etc/avrdude.conf" -v -patmega32u4 -cstk500v1 -P/dev/cu.usbmodem1461201 -b19200 -e -Ulock:w:0x3F:m -Uefuse:w:0xCB:m -Uhfuse:w:0xD8:m -Ulfuse:w:0xFF:m
-		//"/Users/anthrowareadmin/Library/Arduino15/packages/arduino/tools/avrdude/6.3.0-arduino17/bin/avrdude" "-C/Users/anthrowareadmin/Library/Arduino15/packages/arduino/tools/avrdude/6.3.0-arduino17/etc/avrdude.conf" -v -patmega32u4 -cstk500v1 -P/dev/cu.usbmodem1461201 -b19200 "-Uflash:w:/Users/anthrowareadmin/Library/Arduino15/packages/SparkFun/hardware/avr/1.1.13/bootloaders/caterina/Caterina-promicro16.hex:i" -Ulock:w:0x2F:m
+		const command1 = `"/Users/anthrowareadmin/Library/Arduino15/packages/arduino/tools/avrdude/6.3.0-arduino17/bin/avrdude" "-C/Users/anthrowareadmin/Library/Arduino15/packages/arduino/tools/avrdude/6.3.0-arduino17/etc/avrdude.conf" -v -patmega32u4 -cstk500v1 -P${portName} -b19200 -e -Ulock:w:0x3F:m -Uefuse:w:0xCB:m -Uhfuse:w:0xD8:m -Ulfuse:w:0xFF:m`;
+		const command2 = `"/Users/anthrowareadmin/Library/Arduino15/packages/arduino/tools/avrdude/6.3.0-arduino17/bin/avrdude" "-C/Users/anthrowareadmin/Library/Arduino15/packages/arduino/tools/avrdude/6.3.0-arduino17/etc/avrdude.conf" -v -patmega32u4 -cstk500v1 -P${portName} -b19200 "-Uflash:w:${hexFilePath}:i" -Ulock:w:0x2F:m`;
+		//"/Users/anthrowareadmin/Library/Arduino15/packages/arduino/tools/avrdude/6.3.0-arduino17/bin/avrdude" "-C/Users/anthrowareadmin/Library/Arduino15/packages/arduino/tools/avrdude/6.3.0-arduino17/etc/avrdude.conf" -v -patmega32u4 -cstk500v1 -P${portName} -b19200 -e -Ulock:w:0x3F:m -Uefuse:w:0xCB:m -Uhfuse:w:0xD8:m -Ulfuse:w:0xFF:m
+		//"/Users/anthrowareadmin/Library/Arduino15/packages/arduino/tools/avrdude/6.3.0-arduino17/bin/avrdude" "-C/Users/anthrowareadmin/Library/Arduino15/packages/arduino/tools/avrdude/6.3.0-arduino17/etc/avrdude.conf" -v -patmega32u4 -cstk500v1 -P${portName} -b19200 "-Uflash:w:/Users/anthrowareadmin/Library/Arduino15/packages/SparkFun/hardware/avr/1.1.13/bootloaders/caterina/Caterina-promicro16.hex:i" -Ulock:w:0x2F:m
 
 		//TODO: run command1 and then command2, be verbose with output
-		console.log('Running command1...');
+		console.log(`Running command1...\n${command1}\n`);
 		exec(command1, (err, stdout, stderr) => {
 			if (err) {
 				resolve({ error: err.message.split('\n') });
@@ -86,7 +86,7 @@ const flashHex = ({ portName, hexFilePath, avrDudeConf }) =>
 			console.log(stdout);
 			console.error(stderr);
 
-			console.log('Running command2...');
+			console.log(`Running command2...\n${command2}\n`);
 			exec(command2, (err, stdout, stderr) => {
 				if (err) {
 					resolve({ error: err.message.split('\n') });
@@ -138,8 +138,9 @@ const flashHex = ({ portName, hexFilePath, avrDudeConf }) =>
 	// const deviceConfirmed = await confirmDevice({ portName, avrDudeConf });
 	// console.log(deviceConfirmed);
 
+	const portName = '/dev/tty.usbmodem14501';
 	const flashResult = await flashHex({
-		// portName,
+		portName,
 		hexFilePath,
 		// avrDudeConf,
 	});
